@@ -12,7 +12,15 @@ const app = express();
 // ==============================
 // CONFIG
 // ==============================
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://assignment-app-front.vercel.app',
+    'http://localhost:4200'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
@@ -69,7 +77,6 @@ function verifierToken(req, res, next) {
     if (err) {
       return res.status(403).json({ message: "Token invalide" });
     }
-
     req.user = decoded;
     next();
   });
@@ -176,7 +183,6 @@ app.get('/generate', async (req, res) => {
   }
 
   await Assignment.insertMany(data);
-
   res.send("1000 assignments générés ✅");
 });
 
@@ -186,14 +192,11 @@ app.get('/generate', async (req, res) => {
 app.post('/assignments', verifierToken, async (req, res) => {
 
   if (req.body.rendu && (!req.body.note || req.body.note <= 0)) {
-    return res.status(400).json({
-      message: "Impossible de rendre sans note"
-    });
+    return res.status(400).json({ message: "Impossible de rendre sans note" });
   }
 
   const nouveau = new Assignment(req.body);
   await nouveau.save();
-
   res.json(nouveau);
 });
 
@@ -203,9 +206,7 @@ app.post('/assignments', verifierToken, async (req, res) => {
 app.put('/assignments/:id', verifierToken, async (req, res) => {
 
   if (req.body.rendu && (!req.body.note || req.body.note <= 0)) {
-    return res.status(400).json({
-      message: "Impossible de rendre sans note"
-    });
+    return res.status(400).json({ message: "Impossible de rendre sans note" });
   }
 
   const modif = await Assignment.findByIdAndUpdate(
@@ -221,9 +222,7 @@ app.put('/assignments/:id', verifierToken, async (req, res) => {
 // DELETE (PROTÉGÉ)
 // ==============================
 app.delete('/assignments/:id', verifierToken, async (req, res) => {
-
   await Assignment.findByIdAndDelete(req.params.id);
-
   res.json({ message: "Supprimé ✅" });
 });
 
