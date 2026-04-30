@@ -12,15 +12,9 @@ const app = express();
 // ==============================
 // CONFIG
 // ==============================
-app.use(cors({
-  origin: [
-    'https://assignment-app-front.vercel.app',
-    'http://localhost:4200'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
 
+// ✅ CORS ouvert — accepte toutes les origines
+app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
